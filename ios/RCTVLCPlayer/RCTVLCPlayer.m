@@ -90,8 +90,6 @@ static NSString *const playbackRate = @"rate";
         [self _release];
     }
     // [bavv edit start]
-    // NSArray* options = [_source objectForKey:@"initOptions"];
-    // NSArray* options = @[@"--rtsp-tcp", @"-vv", @"--network-caching=300"];
     NSArray *options = [NSArray arrayWithObject:@"--rtsp-tcp"];
     NSString* uri    = [_source objectForKey:@"uri"];
     NSURL* _uri    = [NSURL URLWithString:uri];
@@ -125,8 +123,6 @@ static NSString *const playbackRate = @"rate";
     }
     _source = source;
     // [bavv edit start]
-    // NSArray* options = [source objectForKey:@"initOptions"];
-    // NSArray* options = @[@"--rtsp-tcp", @"-vv", @"--network-caching=300"];
     NSArray *options = [NSArray arrayWithObject:@"--rtsp-tcp"];
     NSString* uri    = [source objectForKey:@"uri"];
     BOOL    autoplay = [RCTConvert BOOL:[source objectForKey:@"autoplay"]];

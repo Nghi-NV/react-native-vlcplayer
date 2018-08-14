@@ -1,14 +1,14 @@
-import React, { PureComponent } from 'react';
-import {
-  StyleSheet, 
-  requireNativeComponent, 
-  NativeModules, 
-  View
-} from 'react-native';
+import React from 'react';
+import ReactNative from 'react-native';
+
+const { Component } = React;
+
 import PropTypes from 'prop-types';
+
+const { StyleSheet, requireNativeComponent, NativeModules, View } = ReactNative;
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
-export default class VLCPlayer extends PureComponent {
+export default class VLCPlayer extends Component {
   constructor(props, context) {
     super(props, context);
     this.seek = this.seek.bind(this);
@@ -24,6 +24,7 @@ export default class VLCPlayer extends PureComponent {
     this._onBuffering = this._onBuffering.bind(this);
     this._onOpen = this._onOpen.bind(this);
     this._onLoadStart = this._onLoadStart.bind(this);
+
   }
 
   setNativeProps(nativeProps) {
@@ -58,13 +59,13 @@ export default class VLCPlayer extends PureComponent {
     }
   }
 
-  _onOpen(event) {
+  _onOpen(event){
     if (this.props.onOpen) {
       this.props.onOpen(event.nativeEvent);
     }
   }
 
-  _onLoadStart(event) {
+  _onLoadStart(event){
     if (this.props.onLoadStart) {
       this.props.onLoadStart(event.nativeEvent);
     }
@@ -114,7 +115,7 @@ export default class VLCPlayer extends PureComponent {
 
     let isNetwork = !!(uri && uri.match(/^https?:/));
     const isAsset = !!(uri && uri.match(/^(assets-library|file|content|ms-appx|ms-appdata):/));
-    if (!isAsset) {
+    if(!isAsset){
       isNetwork = true;
     }
     source.initOptions = source.initOptions || [];

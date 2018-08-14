@@ -326,6 +326,10 @@ export default class VLCPlayerView extends Component {
   };
 
   _onError = e => {
+    // [bavv add start]
+    let { onVLCError } = this.props;
+    onVLCError && onVLCError();
+    // [bavv add end]
     console.log('_onError');
     console.log(e);
     this.reloadSuccess = false;
@@ -424,7 +428,10 @@ export default class VLCPlayerView extends Component {
     console.log(event)
     console.log('<---------- onEnded ')
     let { currentTime, totalTime } = this.state;
-    let { onEnd, autoplay, isGG } = this.props;
+     // [bavv add start]
+     let { onVLCEnded, onEnd, autoplay, isGG } = this.props;
+     onVLCEnded && onVLCEnded();
+      // [bavv add end]
     if (((currentTime + 5) >= totalTime && totalTime > 0) || isGG) {
       this.setState(
         {

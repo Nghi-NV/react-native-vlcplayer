@@ -17,7 +17,7 @@ import {
 import VLCPlayerView from './VLCPlayerView';
 import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getStatusBarHeight } from './SizeController';
+import {getStatusBarHeight}  from './SizeController';
 const statusBarHeight = getStatusBarHeight();
 const _fullKey = 'commonVideo_android_fullKey';
 let deviceHeight = Dimensions.get('window').height;
@@ -85,7 +85,7 @@ export default class CommonVideo extends Component {
     showTitle: PropTypes.bool,
 
     onGoLivePress: PropTypes.func,
-
+    
     onReplayPress: PropTypes.func,
   };
 
@@ -93,13 +93,13 @@ export default class CommonVideo extends Component {
     let { url } = nextProps;
     let { currentUrl, storeUrl } = preState;
     if (url && url !== storeUrl) {
-      if (storeUrl === "") {
+      if(storeUrl === ""){
         return {
           currentUrl: url,
           storeUrl: url,
           isEndGG: false,
         };
-      } else {
+      }else{
         return {
           currentUrl: "",
           storeUrl: url,
@@ -113,18 +113,18 @@ export default class CommonVideo extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.url !== prevState.storeUrl) {
-      this.setState({
-        storeUrl: this.props.url,
-        currentUrl: this.props.url
+        this.setState({
+          storeUrl: this.props.url,
+          currentUrl: this.props.url
       })
     }
   }
 
-  componentDidMount() {
+  componentDidMount(){
     StatusBar.setBarStyle("light-content");
     let { style, isGG } = this.props;
 
-    if (style && style.height && !isNaN(style.height)) {
+    if(style && style.height && !isNaN(style.height)){
       this.initialHeight = style.height;
     }
     this.setState({
@@ -160,36 +160,38 @@ export default class CommonVideo extends Component {
   _toFullScreen = () => {
     let { startFullScreen, BackHandle, Orientation } = this.props;
     //StatusBar.setTranslucent(true);
-    this.setState({ isFull: true, currentVideoAspectRatio: deviceHeight + ":" + deviceWidth, });
+    this.setState({ isFull: true, currentVideoAspectRatio: deviceHeight + ":" + deviceWidth,});
     StatusBar.setHidden(true);
     BackHandle && BackHandle.addBackFunction(_fullKey, this._closeFullScreen);
     startFullScreen && startFullScreen();
     Orientation && Orientation.lockToLandscape && Orientation.lockToLandscape();
   };
 
-  _onLayout = (e) => {
-    let { width, height } = e.nativeEvent.layout;
+  _onLayout = (e)=>{
+    let {width, height} = e.nativeEvent.layout;
     console.log(e.nativeEvent.layout);
-    if (width * height > 0) {
+    if(width * height > 0){
       this.width = width;
       this.height = height;
-      if (!this.initialHeight) {
+      if(!this.initialHeight){
         this.initialHeight = height;
       }
     }
   }
 
+
+
   render() {
-    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle, closeFullScreen, videoAspectRatio, fullVideoAspectRatio } = this.props;
+    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle,closeFullScreen, videoAspectRatio, fullVideoAspectRatio } = this.props;
     let { isEndGG, isFull, currentUrl } = this.state;
     let currentVideoAspectRatio = '';
-    if (isFull) {
+    if(isFull){
       currentVideoAspectRatio = fullVideoAspectRatio;
-    } else {
+    }else{
       currentVideoAspectRatio = videoAspectRatio;
     }
-    if (!currentVideoAspectRatio) {
-      let { width, height } = this.state;
+    if(!currentVideoAspectRatio){
+      let { width, height} = this.state;
       currentVideoAspectRatio = this.state.currentVideoAspectRatio;
     }
     let realShowGG = false;
@@ -201,14 +203,14 @@ export default class CommonVideo extends Component {
       realShowGG = true;
     }
     if (currentUrl) {
-      if (!showGG || (showGG && isEndGG)) {
+      if(!showGG || (showGG && isEndGG)){
         showVideo = true;
       }
-      if (currentUrl.split) {
-        let types = currentUrl.split('.');
-        if (types && types.length > 0) {
-          type = types[types.length - 1];
-        }
+      if(currentUrl.split){
+         let types = currentUrl.split('.');
+         if (types && types.length > 0) {
+             type = types[types.length - 1];
+         }
       }
     }
     if (ggUrl && ggUrl.split) {
@@ -217,7 +219,7 @@ export default class CommonVideo extends Component {
         ggType = types[types.length - 1];
       }
     }
-    if (!showVideo && !realShowGG) {
+    if(!showVideo && !realShowGG){
       showTop = true;
     }
     return (
@@ -227,21 +229,21 @@ export default class CommonVideo extends Component {
         {showTop && <View style={styles.topView}>
           <View style={styles.backBtn}>
             {showBack && <TouchableOpacity
-              onPress={() => {
-                if (isFull) {
-                  closeFullScreen && closeFullScreen();
-                } else {
+              onPress={()=>{
+               if(isFull){
+                 closeFullScreen && closeFullScreen();
+               }else{
                   onLeftPress && onLeftPress();
-                }
-              }}
+               }
+            }}
               style={styles.btn}
               activeOpacity={0.8}>
-              <Icon name={'chevron-left'} size={30} color="#fff" />
+              <Icon name={'chevron-left'} size={30} color="#fff"/>
             </TouchableOpacity>
             }
-            <View style={{ justifyContent: 'center', flex: 1, marginRight: 10 }}>
+            <View style={{justifyContent:'center',flex:1, marginRight: 10}}>
               {showTitle &&
-                <Text style={{ color: '#fff', fontSize: 16 }} numberOfLines={1}>{title}</Text>
+              <Text style={{color:'#fff', fontSize: 16}} numberOfLines={1}>{title}</Text>
               }
             </View>
           </View>
@@ -268,28 +270,28 @@ export default class CommonVideo extends Component {
         )}
 
         {showVideo && (
-          <VLCPlayerView
-            {...this.props}
-            uri={currentUrl}
-            videoAspectRatio={currentVideoAspectRatio}
-            onLeftPress={onLeftPress}
-            title={title}
-            type={type}
-            isFull={isFull}
-            showBack={showBack}
-            showTitle={showTitle}
-            hadGG={true}
-            isEndGG={isEndGG}
-            //initPaused={this.state.paused}
-            style={showGG && !isEndGG ? { position: 'absolute', zIndex: -1 } : {}}
-            source={{ uri: currentUrl, type: type }}
-            startFullScreen={this._toFullScreen}
-            closeFullScreen={this._closeFullScreen}
-            onEnd={() => {
-              onEnd && onEnd();
-            }}
-          />
-        )}
+            <VLCPlayerView
+              {...this.props}
+              uri={currentUrl}
+              videoAspectRatio={currentVideoAspectRatio}
+              onLeftPress={onLeftPress}
+              title={title}
+              type={type}
+              isFull={isFull}
+              showBack={showBack}
+              showTitle={showTitle}
+              hadGG={true}
+              isEndGG={isEndGG}
+              //initPaused={this.state.paused}
+              style={showGG && !isEndGG ? { position: 'absolute', zIndex: -1 } : {}}
+              source={{ uri: currentUrl, type: type }}
+              startFullScreen={this._toFullScreen}
+              closeFullScreen={this._closeFullScreen}
+              onEnd={() => {
+                onEnd && onEnd();
+              }}
+            />
+          )}
       </View>
     );
   }
@@ -300,27 +302,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  topView: {
-    top: Platform.OS === 'ios' ? statusBarHeight : 0,
-    left: 0,
-    height: 45,
-    position: 'absolute',
-    width: '100%'
+  topView:{
+    top:Platform.OS === 'ios' ? statusBarHeight: 0,
+    left:0,
+    height:45,
+    position:'absolute',
+    width:'100%'
   },
-  backBtn: {
-    height: 45,
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center'
+  backBtn:{
+    height:45,
+    width:'100%',
+    flexDirection:'row',
+    alignItems:'center'
   },
-  btn: {
-    marginLeft: 10,
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.1)',
-    height: 40,
-    borderRadius: 20,
-    width: 40,
+  btn:{
+    marginLeft:10,
+    marginRight:10,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.1)',
+    height:40,
+    borderRadius:20,
+    width:40,
   }
 });

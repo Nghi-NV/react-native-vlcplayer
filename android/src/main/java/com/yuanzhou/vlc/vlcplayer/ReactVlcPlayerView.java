@@ -204,8 +204,8 @@ class ReactVlcPlayerView extends SurfaceView implements
             options.add("--rtsp-tcp");
             options.add("-vv");
             // [bavv add end]
-            libvlc =  VLCInstance.get(getContext());
-            //libvlc = new LibVLC(getContext(), options);
+            // libvlc =  VLCInstance.get(getContext());
+            libvlc = new LibVLC(getContext(), options);
             // Create media player
             mMediaPlayer = new MediaPlayer(libvlc);
             mMediaPlayer.setEventListener(mPlayerListener);
