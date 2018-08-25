@@ -47,6 +47,7 @@ export default class CommonVideo extends Component {
     url: '',
     showBack: false,
     showTitle: false,
+    widthCamera: deviceWidth
   };
 
   static propTypes = {
@@ -87,6 +88,7 @@ export default class CommonVideo extends Component {
     onGoLivePress: PropTypes.func,
     
     onReplayPress: PropTypes.func,
+    widthCamera: PropTypes.number
   };
 
   static getDerivedStateFromProps(nextProps, preState) {
@@ -128,7 +130,7 @@ export default class CommonVideo extends Component {
       this.initialHeight = style.height;
     }
     this.setState({
-      currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight,
+      currentVideoAspectRatio: this.props.widthCamera + ":" + this.initialHeight,
     });
 
     // [bav add start]
@@ -149,7 +151,7 @@ export default class CommonVideo extends Component {
 
   _closeFullScreen = () => {
     let { closeFullScreen, BackHandle, Orientation } = this.props;
-    this.setState({ isFull: false, currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight, });
+    this.setState({ isFull: false, currentVideoAspectRatio: this.props.widthCamera + ":" + this.initialHeight, });
     BackHandle && BackHandle.removeBackFunction(_fullKey);
     Orientation && Orientation.lockToPortrait();
     StatusBar.setHidden(false);
@@ -178,8 +180,6 @@ export default class CommonVideo extends Component {
       }
     }
   }
-
-
 
   render() {
     let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle,closeFullScreen, videoAspectRatio, fullVideoAspectRatio } = this.props;
