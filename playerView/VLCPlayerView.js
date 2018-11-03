@@ -25,7 +25,7 @@ let deviceHeight = Dimensions.get('window').height;
 let deviceWidth = Dimensions.get('window').width;
 export default class VLCPlayerView extends Component {
   static propTypes = {
-    uri: PropTypes.string,
+    uri: PropTypes.string
   };
 
   constructor(props) {
@@ -45,13 +45,6 @@ export default class VLCPlayerView extends Component {
     this.changeUrl = false;
     this.isEnding = false;
     this.reloadSuccess = false;
-
-    //bav test
-    // console.log(`xxxx == ${this.props.isFull}`);
-    // if (this.props.isFull) {
-    //   this._toFullScreen();
-    // }
-
   }
 
   static defaultProps = {
@@ -81,9 +74,7 @@ export default class VLCPlayerView extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.uri !== prevProps.uri) {
-      console.log("componentDidUpdate");
       this.changeUrl = true;
-
     }
   }
 
@@ -104,6 +95,7 @@ export default class VLCPlayerView extends Component {
       showGoLive,
       onGoLivePress,
       onReplayPress,
+      enableShowControl
     } = this.props;
     let { isLoading, loadingSuccess, showControls, isError } = this.state;
     let showGG = false;
@@ -175,7 +167,7 @@ export default class VLCPlayerView extends Component {
           )}
         {isError && (
           <View style={[styles.loading, { backgroundColor: '#000' }]}>
-            <Text style={{ color: 'red' }}>视屏播放出错,请重新加载</Text>
+            <Text style={{ color: 'red' }}>ERROR</Text>
             <TouchableOpacity
               activeOpacity={1}
               onPress={this._reload}
@@ -226,7 +218,7 @@ export default class VLCPlayerView extends Component {
           </View>
         </View>
         <View style={[styles.bottomView]}>
-          {showControls && (
+          {enableShowControl && showControls && (
             <ControlBtn
               //style={isFull?{width:deviceHeight}:{}}
               showSlider={!isGG}
@@ -428,10 +420,10 @@ export default class VLCPlayerView extends Component {
     console.log(event)
     console.log('<---------- onEnded ')
     let { currentTime, totalTime } = this.state;
-     // [bavv add start]
-     let { onVLCEnded, onEnd, autoplay, isGG } = this.props;
-     onVLCEnded && onVLCEnded();
-      // [bavv add end]
+    // [bavv add start]
+    let { onVLCEnded, onEnd, autoplay, isGG } = this.props;
+    onVLCEnded && onVLCEnded();
+    // [bavv add end]
     if (((currentTime + 5) >= totalTime && totalTime > 0) || isGG) {
       this.setState(
         {
