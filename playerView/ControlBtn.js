@@ -17,6 +17,13 @@ import PropTypes from 'prop-types';
 import TimeLimt from './TimeLimit';
 
 export default class ControlBtn extends Component {
+  static defaultProps = {
+    titleGolive: 'Go live',
+    showLeftButton: true,
+    showMiddleButton: true,
+    showRightButton: true
+  }
+
   _getTime = (data = 0) => {
     let hourCourse = Math.floor(data / 3600);
     let diffCourse = data % 3600;
@@ -61,6 +68,10 @@ export default class ControlBtn extends Component {
       onLeftPress,
       title,
       onEnd,
+      titleGolive,
+      showLeftButton,
+      showMiddleButton,
+      showRightButton,
       style
     } = this.props;
     return (
@@ -69,26 +80,34 @@ export default class ControlBtn extends Component {
           <TouchableOpacity style={styles.controlContent} activeOpacity={1}>
             <View style={styles.controlContent2}>
               <View style={styles.right}>
-                <TouchableOpacity
-                  activeOpacity={1}
-                  onPress={() => {
-                    onReplayPress && onReplayPress();
-                  }}
-                  style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name={'replay'} size={30} color="#fff" />
-                </TouchableOpacity>
+                {
+                  showLeftButton ? (
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      onPress={() => {
+                        onReplayPress && onReplayPress();
+                      }}
+                      style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name={'replay'} size={30} color="#fff" />
+                    </TouchableOpacity>
+                  ) : <View style={{ width: 50 }} />
+                }
                 <Text
                   style={{ fontSize: 11, color: '#fff' }}>       </Text>
               </View>
 
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => {
-                  onPausedPress && onPausedPress(!paused);
-                }}
-                style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={paused ? 'play' : 'pause'} size={30} color="#fff" />
-              </TouchableOpacity>
+              {
+                showMiddleButton && (
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={() => {
+                      onPausedPress && onPausedPress(!paused);
+                    }}
+                    style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name={paused ? 'play' : 'pause'} size={30} color="#fff" />
+                  </TouchableOpacity>
+                )
+              }
 
               {/* {showSlider && totalTime > 0 &&(
                 <View
@@ -135,16 +154,20 @@ export default class ControlBtn extends Component {
                     onGoLivePress && onGoLivePress();
                   }}>
                   <Text
-                    style={{ fontSize: 11, color: '#fff' }}>{showGoLive ? 'Go live' : '       '}</Text>
+                    style={{ fontSize: 11, color: '#fff' }}>{showGoLive ? titleGolive : '       '}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  activeOpacity={1}
-                  onPress={() => {
-                    onFullPress && onFullPress(!isFull);
-                  }}
-                  style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name={isFull ? 'fullscreen-exit' : 'fullscreen'} size={30} color="#fff" />
-                </TouchableOpacity>
+                {
+                  showRightButton ? (
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      onPress={() => {
+                        onFullPress && onFullPress(!isFull);
+                      }}
+                      style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name={isFull ? 'fullscreen-exit' : 'fullscreen'} size={30} color="#fff" />
+                    </TouchableOpacity>
+                  ) : <View style={{ width: 50 }} />
+                }
               </View>
 
             </View>
