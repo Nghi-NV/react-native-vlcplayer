@@ -59,13 +59,13 @@ export default class VLCPlayer extends Component {
     }
   }
 
-  _onOpen(event){
+  _onOpen(event) {
     if (this.props.onOpen) {
       this.props.onOpen(event.nativeEvent);
     }
   }
 
-  _onLoadStart(event){
+  _onLoadStart(event) {
     if (this.props.onLoadStart) {
       this.props.onLoadStart(event.nativeEvent);
     }
@@ -83,10 +83,10 @@ export default class VLCPlayer extends Component {
     }
   }
 
-  _onStopped(event) {
+  _onStopped() {
     this.setNativeProps({ paused: true });
     if (this.props.onStopped) {
-      this.props.onStopped(event.nativeEvent);
+      this.props.onStopped();
     }
   }
 
@@ -115,7 +115,7 @@ export default class VLCPlayer extends Component {
 
     let isNetwork = !!(uri && uri.match(/^https?:/));
     const isAsset = !!(uri && uri.match(/^(assets-library|file|content|ms-appx|ms-appdata):/));
-    if(!isAsset){
+    if (!isAsset) {
       isNetwork = true;
     }
     source.initOptions = source.initOptions || [];
