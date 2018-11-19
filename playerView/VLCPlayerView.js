@@ -25,7 +25,7 @@ let deviceHeight = Dimensions.get('window').height;
 let deviceWidth = Dimensions.get('window').width;
 export default class VLCPlayerView extends Component {
   static propTypes = {
-    uri: PropTypes.string
+    uri: PropTypes.string,
   };
 
   constructor(props) {
@@ -65,6 +65,8 @@ export default class VLCPlayerView extends Component {
   }
 
   componentWillUnmount() {
+    this.vlcPlayer._onStopped()
+
     if (this.bufferInterval) {
       clearInterval(this.bufferInterval);
       this.bufferInterval = null;
@@ -74,6 +76,7 @@ export default class VLCPlayerView extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.uri !== prevProps.uri) {
+      console.log("componentDidUpdate");
       this.changeUrl = true;
     }
   }
@@ -95,7 +98,10 @@ export default class VLCPlayerView extends Component {
       showGoLive,
       onGoLivePress,
       onReplayPress,
-      enableShowControl
+      titleGolive,
+      showLeftButton,
+      showMiddleButton,
+      showRightButton,
     } = this.props;
     let { isLoading, loadingSuccess, showControls, isError } = this.state;
     let showGG = false;
@@ -167,7 +173,7 @@ export default class VLCPlayerView extends Component {
           )}
         {isError && (
           <View style={[styles.loading, { backgroundColor: '#000' }]}>
-            <Text style={{ color: 'red' }}>ERROR</Text>
+            <Text style={{ color: 'red' }}>视屏播放出错,请重新加载</Text>
             <TouchableOpacity
               activeOpacity={1}
               onPress={this._reload}
@@ -218,7 +224,7 @@ export default class VLCPlayerView extends Component {
           </View>
         </View>
         <View style={[styles.bottomView]}>
-          {enableShowControl && showControls && (
+          {showControls && (
             <ControlBtn
               //style={isFull?{width:deviceHeight}:{}}
               showSlider={!isGG}
@@ -249,6 +255,10 @@ export default class VLCPlayerView extends Component {
               showGoLive={showGoLive}
               onGoLivePress={onGoLivePress}
               onReplayPress={onReplayPress}
+              titleGolive={titleGolive}
+              showLeftButton={showLeftButton}
+              showMiddleButton={showMiddleButton}
+              showRightButton={showRightButton}
             />
           )}
         </View>
@@ -331,8 +341,7 @@ export default class VLCPlayerView extends Component {
   };
 
   _onOpen = e => {
-    console.log('onOpen');
-    console.log(e);
+    console.log('onOpen', e);
   };
 
   _onLoadStart = e => {
