@@ -27,6 +27,10 @@ export default class CommonVideo extends Component {
     super(props);
     this.url = '';
     this.initialHeight = 200;
+
+    if (props.widthCamera) {
+      deviceWidth = props.widthCamera
+    }
   }
 
   static navigationOptions = {
@@ -47,7 +51,6 @@ export default class CommonVideo extends Component {
     url: '',
     showBack: false,
     showTitle: false,
-    enableShowControl: true
   };
 
   static propTypes = {
@@ -84,7 +87,6 @@ export default class CommonVideo extends Component {
      * 是否显示标题
      */
     showTitle: PropTypes.bool,
-    enableShowControl: PropTypes.bool,
 
     onGoLivePress: PropTypes.func,
 
@@ -112,6 +114,7 @@ export default class CommonVideo extends Component {
     return null;
   }
 
+
   componentDidUpdate(prevProps, prevState) {
     if (this.props.url !== prevState.storeUrl) {
       this.setState({
@@ -134,6 +137,7 @@ export default class CommonVideo extends Component {
 
     // [bav add start]
     let { isFull } = this.props;
+    console.log(`isFull == ${isFull}`);
     if (isFull) {
       this._toFullScreen();
     }
@@ -250,7 +254,6 @@ export default class CommonVideo extends Component {
         {realShowGG && (
           <VLCPlayerView
             {...this.props}
-            enableShowControl={this.props.enableShowControl}
             videoAspectRatio={currentVideoAspectRatio}
             uri={ggUrl}
             source={{ uri: ggUrl, type: ggType }}
@@ -272,7 +275,6 @@ export default class CommonVideo extends Component {
           <VLCPlayerView
             {...this.props}
             uri={currentUrl}
-            enableShowControl={this.props.enableShowControl}
             videoAspectRatio={currentVideoAspectRatio}
             onLeftPress={onLeftPress}
             title={title}
@@ -300,7 +302,7 @@ export default class CommonVideo extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#000'
   },
   topView: {
     top: Platform.OS === 'ios' ? statusBarHeight : 0,
