@@ -51,6 +51,7 @@ export default class CommonVideo extends Component {
     url: '',
     showBack: false,
     showTitle: false,
+    enableShowControl: true
   };
 
   static propTypes = {
@@ -91,6 +92,7 @@ export default class CommonVideo extends Component {
     onGoLivePress: PropTypes.func,
 
     onReplayPress: PropTypes.func,
+    enableShowControl: PropTypes.bool
   };
 
   static getDerivedStateFromProps(nextProps, preState) {
@@ -256,6 +258,7 @@ export default class CommonVideo extends Component {
             {...this.props}
             videoAspectRatio={currentVideoAspectRatio}
             uri={ggUrl}
+            enableShowControl={this.props.enableShowControl}
             source={{ uri: ggUrl, type: ggType }}
             type={ggType}
             isGG={true}
@@ -275,6 +278,7 @@ export default class CommonVideo extends Component {
           <VLCPlayerView
             {...this.props}
             uri={currentUrl}
+            enableShowControl={this.props.enableShowControl}
             videoAspectRatio={currentVideoAspectRatio}
             onLeftPress={onLeftPress}
             title={title}
