@@ -102,6 +102,7 @@ export default class VLCPlayerView extends Component {
       showLeftButton,
       showMiddleButton,
       showRightButton,
+      enableShowControl
     } = this.props;
     let { isLoading, loadingSuccess, showControls, isError } = this.state;
     let showGG = false;
@@ -224,7 +225,7 @@ export default class VLCPlayerView extends Component {
           </View>
         </View>
         <View style={[styles.bottomView]}>
-          {showControls && (
+          {showControls && enableShowControl && (
             <ControlBtn
               //style={isFull?{width:deviceHeight}:{}}
               showSlider={!isGG}
