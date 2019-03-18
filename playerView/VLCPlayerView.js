@@ -54,6 +54,7 @@ export default class VLCPlayerView extends Component {
     playInBackground: false,
     isGG: false,
     autoplay: true,
+    errorTitle: 'Error play video, please try again'
   };
 
   componentDidMount() {
@@ -102,7 +103,7 @@ export default class VLCPlayerView extends Component {
       showLeftButton,
       showMiddleButton,
       showRightButton,
-      enableShowControl
+      errorTitle
     } = this.props;
     let { isLoading, loadingSuccess, showControls, isError } = this.state;
     let showGG = false;
@@ -174,7 +175,7 @@ export default class VLCPlayerView extends Component {
           )}
         {isError && (
           <View style={[styles.loading, { backgroundColor: '#000' }]}>
-            <Text style={{ color: 'red' }}>视屏播放出错,请重新加载</Text>
+            <Text style={{ color: 'red' }}>{errorTitle}</Text>
             <TouchableOpacity
               activeOpacity={1}
               onPress={this._reload}
@@ -225,7 +226,7 @@ export default class VLCPlayerView extends Component {
           </View>
         </View>
         <View style={[styles.bottomView]}>
-          {showControls && enableShowControl && (
+          {showControls && (
             <ControlBtn
               //style={isFull?{width:deviceHeight}:{}}
               showSlider={!isGG}
