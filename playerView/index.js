@@ -51,7 +51,6 @@ export default class CommonVideo extends Component {
     url: '',
     showBack: false,
     showTitle: false,
-    enableShowControl: true
   };
 
   static propTypes = {
@@ -92,7 +91,6 @@ export default class CommonVideo extends Component {
     onGoLivePress: PropTypes.func,
 
     onReplayPress: PropTypes.func,
-    enableShowControl: PropTypes.bool
   };
 
   static getDerivedStateFromProps(nextProps, preState) {
@@ -118,7 +116,7 @@ export default class CommonVideo extends Component {
 
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.url !== prevState.storeUrl) {
+    if (this.props.url !== prevState.storeUrl && this._componentMounted) {
       this.setState({
         storeUrl: this.props.url,
         currentUrl: this.props.url
@@ -127,6 +125,7 @@ export default class CommonVideo extends Component {
   }
 
   componentDidMount() {
+    this._componentMounted = true
     StatusBar.setBarStyle("light-content");
     let { style, isGG } = this.props;
 
@@ -137,16 +136,16 @@ export default class CommonVideo extends Component {
       currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight,
     });
 
-    // [bav add start]
     let { isFull } = this.props;
     console.log(`isFull == ${isFull}`);
     if (isFull) {
       this._toFullScreen();
     }
-    // [bav add end]
   }
 
   componentWillUnmount() {
+    this._componentMounted = false;
+
     let { isFull } = this.props;
     if (isFull) {
       this._closeFullScreen();
@@ -155,12 +154,14 @@ export default class CommonVideo extends Component {
 
   _closeFullScreen = () => {
     let { closeFullScreen, BackHandle, Orientation } = this.props;
-    this.setState({ isFull: false, currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight, });
+    if (this._componentMounted) {
+      this.setState({ isFull: false, currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight, });
+    }
     BackHandle && BackHandle.removeBackFunction(_fullKey);
     Orientation && Orientation.lockToPortrait();
     StatusBar.setHidden(false);
     //StatusBar.setTranslucent(false);
-    closeFullScreen && closeFullScreen();
+    this._componentMounted && closeFullScreen && closeFullScreen();
   };
 
   _toFullScreen = () => {
@@ -258,7 +259,6 @@ export default class CommonVideo extends Component {
             {...this.props}
             videoAspectRatio={currentVideoAspectRatio}
             uri={ggUrl}
-            enableShowControl={this.props.enableShowControl}
             source={{ uri: ggUrl, type: ggType }}
             type={ggType}
             isGG={true}
@@ -278,7 +278,6 @@ export default class CommonVideo extends Component {
           <VLCPlayerView
             {...this.props}
             uri={currentUrl}
-            enableShowControl={this.props.enableShowControl}
             videoAspectRatio={currentVideoAspectRatio}
             onLeftPress={onLeftPress}
             title={title}
