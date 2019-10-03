@@ -110,6 +110,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 0CA30C3B1D07E0DB003B09F9;
@@ -231,6 +232,7 @@
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)/node_modules/react-native/React/**",
 					"$(inherited)",
+					"$(SRCROOT)/../../../ios/Pods/MobileVLCKit-unstable/MobileVLCKit-binary",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -252,6 +254,7 @@
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)/node_modules/react-native/React/**",
 					"$(inherited)",
+					"$(SRCROOT)/../../../ios/Pods/MobileVLCKit-unstable/MobileVLCKit-binary",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
