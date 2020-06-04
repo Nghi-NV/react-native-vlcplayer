@@ -1,7 +1,3 @@
-/**
- * Created by aolc on 2018/5/22.
- */
-
 let backFunctionKeys = [];
 let backFunctionsMap = new Map();
 

@@ -1,17 +1,20 @@
 apply plugin: 'com.android.library'
 
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion safeExtGet('compileSdkVersion', 28)
+    buildToolsVersion safeExtGet('buildToolsVersion', '28.0.3')
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 23
+        minSdkVersion safeExtGet('minSdkVersion', 17)
+        targetSdkVersion safeExtGet('targetSdkVersion', 28)
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         ndk {
-            //支持的abi    可选 精简的库
-            abiFilters 'armeabi-v7a'//,'x86_64','arm64-v8a','x86'
+            abiFilters 'armeabi-v7a','x86_64','arm64-v8a','x86'
         }
     }
     buildTypes {
@@ -22,9 +25,16 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url "https://dl.bintray.com/videolan/Android"
+    }
+    google()
+    jcenter()
+}
+
 dependencies {
-    provided fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.facebook.react:react-native:+"
-    compile 'com.yyl.vlc:vlc-android-sdk:3.0.10'
-    //compile 'de.mrmaffen:vlc-android-sdk:2.0.6'
+    implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'org.videolan.android:libvlc-all:3.1.12'
 }

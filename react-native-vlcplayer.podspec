@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "react-native-vlcplayer"
-  s.version      = "0.3.4"
-  s.summary      = "Introducing Material Design to apps built with React Native."
+  s.version      = "1.0.0"
+  s.summary      = "VLC player"
   s.requires_arc = true
   s.author       = { 'nghinv' => 'nghinv@lumibiz' }
   s.license      = 'MIT'
@@ -11,5 +11,5 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "8.0"
   s.static_framework = true  
   s.dependency 'React'
-  s.dependency 'MobileVLCKit-unstable', '3.0.0a44'
+  s.dependency 'MobileVLCKit', '3.3.10'
 end

@@ -12,12 +12,23 @@
     "android",
     "ios",
     "react-native",
-    "mp4"
+    "mp4",
+    "react-native-vlc",
+    "rtsp"
   ],
-  "author": "",
+  "author": "nguyennghidt6@gmail.com",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/Nghi-NV/react-native-vlcplayer.git"
   },
-  "license": "MIT"
+  "dependencies": {
+    "react-native-slider": "^0.11.0",
+    "react-native-vector-icons": "^6.6.0"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Nghi-NV/react-native-vlcplayer/issues"
+  },
+  "homepage": "https://github.com/Nghi-NV/react-native-vlcplayer#readme",
+  "devDependencies": {}
 }

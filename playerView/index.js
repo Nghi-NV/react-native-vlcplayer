@@ -1,7 +1,3 @@
-/**
- * Created by yuanzhou.xu on 2018/5/15.
- */
-
 import React, { Component } from 'react';
 import {
   StatusBar,
@@ -10,26 +6,29 @@ import {
   Platform,
   TouchableOpacity,
   Text,
-  Dimensions,
-  BackHandler,
+  Dimensions
 } from 'react-native';
-
 import VLCPlayerView from './VLCPlayerView';
 import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getStatusBarHeight } from './SizeController';
+
 const statusBarHeight = getStatusBarHeight();
 const _fullKey = 'commonVideo_android_fullKey';
-let deviceHeight = Dimensions.get('window').height;
+const deviceHeight = Dimensions.get('window').height;
 let deviceWidth = Dimensions.get('window').width;
+
 export default class CommonVideo extends Component {
   constructor(props) {
     super(props);
     this.url = '';
     this.initialHeight = 200;
 
-    if (props.widthCamera) {
-      deviceWidth = props.widthCamera
+    this.state = {
+      isEndAd: false,
+      isFull: false,
+      currentUrl: '',
+      storeUrl: '',
     }
   }
 
@@ -37,86 +36,56 @@ export default class CommonVideo extends Component {
     header: null,
   };
 
-  state = {
-    isEndGG: false,
-    isFull: false,
-    currentUrl: '',
-    storeUrl: '',
-  };
-
   static defaultProps = {
     height: 250,
-    showGG: false,
-    ggUrl: '',
+    showAd: false,
+    adUrl: '',
     url: '',
     showBack: false,
     showTitle: false,
   };
 
   static propTypes = {
-    /**
-     * 视频播放结束
-     */
     onEnd: PropTypes.func,
 
-    /**
-     * 广告头播放结束
-     */
-    onGGEnd: PropTypes.func,
-    /**
-     * 开启全屏
-     */
+    onAdEnd: PropTypes.func,
+
     startFullScreen: PropTypes.func,
-    /**
-     * 关闭全屏
-     */
+
     closeFullScreen: PropTypes.func,
-    /**
-     * 返回按钮点击事件
-     */
+
     onLeftPress: PropTypes.func,
-    /**
-     * 标题
-     */
+
     title: PropTypes.string,
-    /**
-     * 是否显示返回按钮
-     */
+
     showBack: PropTypes.bool,
-    /**
-     * 是否显示标题
-     */
+
     showTitle: PropTypes.bool,
-
-    onGoLivePress: PropTypes.func,
-
-    onReplayPress: PropTypes.func,
   };
 
-  static getDerivedStateFromProps(nextProps, preState) {
-    let { url } = nextProps;
-    let { currentUrl, storeUrl } = preState;
+  getDerivedStateFromProps(nextProps, preState) {
+    const { url } = nextProps;
+    const { storeUrl } = preState;
     if (url && url !== storeUrl) {
       if (storeUrl === "") {
         return {
           currentUrl: url,
           storeUrl: url,
-          isEndGG: false,
+          isEndAd: false,
         };
       } else {
         return {
           currentUrl: "",
           storeUrl: url,
-          isEndGG: false,
+          isEndAd: false,
         };
       }
     }
     return null;
   }
 
-
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.url !== prevState.storeUrl && this._componentMounted) {
+    if (this.props.url !== prevState.storeUrl) {
       this.setState({
         storeUrl: this.props.url,
         currentUrl: this.props.url
@@ -125,70 +94,49 @@ export default class CommonVideo extends Component {
   }
 
   componentDidMount() {
-    this._componentMounted = true
     StatusBar.setBarStyle("light-content");
-    let { style, isGG } = this.props;
+    const { style } = this.props;
 
     if (style && style.height && !isNaN(style.height)) {
       this.initialHeight = style.height;
     }
+
     this.setState({
       currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight,
     });
-
-    let { isFull } = this.props;
-    console.log(`isFull == ${isFull}`);
-    if (isFull) {
-      this._toFullScreen();
-    }
   }
 
   componentWillUnmount() {
-    this._componentMounted = false;
-
-    let { isFull } = this.props;
+    const { isFull } = this.props;
     if (isFull) {
       this._closeFullScreen();
     }
   }
 
   _closeFullScreen = () => {
-    let { closeFullScreen, BackHandle, Orientation } = this.props;
-    if (this._componentMounted) {
-      this.setState({ isFull: false, currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight, });
-    }
+    const { closeFullScreen, BackHandle, Orientation } = this.props;
+    this.setState({ isFull: false, currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight, });
+
     BackHandle && BackHandle.removeBackFunction(_fullKey);
     Orientation && Orientation.lockToPortrait();
     StatusBar.setHidden(false);
-    //StatusBar.setTranslucent(false);
-    this._componentMounted && closeFullScreen && closeFullScreen();
+    closeFullScreen && closeFullScreen();
   };
 
   _toFullScreen = () => {
-    let { startFullScreen, BackHandle, Orientation } = this.props;
-    //StatusBar.setTranslucent(true);
+    const { startFullScreen, BackHandle, Orientation } = this.props;
     this.setState({ isFull: true, currentVideoAspectRatio: deviceHeight + ":" + deviceWidth, });
+
     StatusBar.setHidden(true);
     BackHandle && BackHandle.addBackFunction(_fullKey, this._closeFullScreen);
     startFullScreen && startFullScreen();
     Orientation && Orientation.lockToLandscape && Orientation.lockToLandscape();
   };
 
-  _onLayout = (e) => {
-    let { width, height } = e.nativeEvent.layout;
-    console.log(e.nativeEvent.layout);
-    if (width * height > 0) {
-      this.width = width;
-      this.height = height;
-      if (!this.initialHeight) {
-        this.initialHeight = height;
-      }
-    }
-  }
-
   render() {
-    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle, closeFullScreen, videoAspectRatio, fullVideoAspectRatio } = this.props;
-    let { isEndGG, isFull, currentUrl } = this.state;
+    const { adUrl, showAd, onAdEnd, onEnd, style, title, onLeftPress, showBack, showTitle, closeFullScreen, videoAspectRatio, fullVideoAspectRatio } = this.props;
+    const { isEndAd, isFull, currentUrl } = this.state;
+
     let currentVideoAspectRatio = '';
     if (isFull) {
       currentVideoAspectRatio = fullVideoAspectRatio;
@@ -196,19 +144,18 @@ export default class CommonVideo extends Component {
       currentVideoAspectRatio = videoAspectRatio;
     }
     if (!currentVideoAspectRatio) {
-      let { width, height } = this.state;
       currentVideoAspectRatio = this.state.currentVideoAspectRatio;
     }
-    let realShowGG = false;
+    let realShowAd = false;
     let type = '';
-    let ggType = '';
+    let adType = '';
     let showVideo = false;
     let showTop = false;
-    if (showGG && ggUrl && !isEndGG) {
-      realShowGG = true;
+    if (showAd && adUrl && !isEndAd) {
+      realShowAd = true;
     }
     if (currentUrl) {
-      if (!showGG || (showGG && isEndGG)) {
+      if (!showAd || (showAd && isEndAd)) {
         showVideo = true;
       }
       if (currentUrl.split) {
@@ -218,18 +165,18 @@ export default class CommonVideo extends Component {
         }
       }
     }
-    if (ggUrl && ggUrl.split) {
-      let types = ggUrl.split('.');
+    if (adUrl && adUrl.split) {
+      let types = adUrl.split('.');
       if (types && types.length > 0) {
-        ggType = types[types.length - 1];
+        adType = types[types.length - 1];
       }
     }
-    if (!showVideo && !realShowGG) {
+    if (!showVideo && !realShowAd) {
       showTop = true;
     }
+
     return (
       <View
-        //onLayout={this._onLayout}
         style={[isFull ? styles.container : { height: 200, backgroundColor: '#000' }, style]}>
         {showTop && <View style={styles.topView}>
           <View style={styles.backBtn}>
@@ -254,20 +201,20 @@ export default class CommonVideo extends Component {
           </View>
         </View>
         }
-        {realShowGG && (
+        {realShowAd && (
           <VLCPlayerView
             {...this.props}
             videoAspectRatio={currentVideoAspectRatio}
-            uri={ggUrl}
-            source={{ uri: ggUrl, type: ggType }}
-            type={ggType}
-            isGG={true}
+            uri={adUrl}
+            source={{ uri: adUrl, type: adType }}
+            type={adType}
+            isAd={true}
             showBack={showBack}
             showTitle={showTitle}
             isFull={isFull}
             onEnd={() => {
-              onGGEnd && onGGEnd();
-              this.setState({ isEndGG: true });
+              onAdEnd && onAdEnd();
+              this.setState({ isEndAd: true });
             }}
             startFullScreen={this._toFullScreen}
             closeFullScreen={this._closeFullScreen}
@@ -285,10 +232,9 @@ export default class CommonVideo extends Component {
             isFull={isFull}
             showBack={showBack}
             showTitle={showTitle}
-            hadGG={true}
-            isEndGG={isEndGG}
-            //initPaused={this.state.paused}
-            style={showGG && !isEndGG ? { position: 'absolute', zIndex: -1 } : {}}
+            hadAd={true}
+            isEndAd={isEndAd}
+            style={showAd && !isEndAd ? { position: 'absolute', zIndex: -1 } : {}}
             source={{ uri: currentUrl, type: type }}
             startFullScreen={this._toFullScreen}
             closeFullScreen={this._closeFullScreen}
@@ -305,7 +251,7 @@ export default class CommonVideo extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000'
+    backgroundColor: '#000',
   },
   topView: {
     top: Platform.OS === 'ios' ? statusBarHeight : 0,

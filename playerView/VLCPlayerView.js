@@ -1,17 +1,10 @@
-/**
- * Created by yuanzhou.xu on 2018/5/14.
- */
 import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
   TouchableOpacity,
   ActivityIndicator,
-  StatusBar,
-  BackHandler,
-  Modal,
   Platform,
 } from 'react-native';
 import VLCPlayer from '../VLCPlayer';
@@ -20,9 +13,9 @@ import TimeLimt from './TimeLimit';
 import ControlBtn from './ControlBtn';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getStatusBarHeight } from './SizeController';
+
 const statusBarHeight = getStatusBarHeight();
-let deviceHeight = Dimensions.get('window').height;
-let deviceWidth = Dimensions.get('window').width;
+
 export default class VLCPlayerView extends Component {
   static propTypes = {
     uri: PropTypes.string,
@@ -52,9 +45,8 @@ export default class VLCPlayerView extends Component {
     source: null,
     seek: 0,
     playInBackground: false,
-    isGG: false,
+    isAd: false,
     autoplay: true,
-    errorTitle: 'Error play video, please try again'
   };
 
   componentDidMount() {
@@ -66,27 +58,23 @@ export default class VLCPlayerView extends Component {
   }
 
   componentWillUnmount() {
-    this.vlcPlayer._onStopped()
-
     if (this.bufferInterval) {
       clearInterval(this.bufferInterval);
       this.bufferInterval = null;
     }
-
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (this.props.uri !== prevProps.uri) {
-      console.log("componentDidUpdate");
       this.changeUrl = true;
     }
   }
 
   render() {
-    let {
+    const {
       onEnd,
       style,
-      isGG,
+      isAd,
       type,
       isFull,
       uri,
@@ -96,19 +84,13 @@ export default class VLCPlayerView extends Component {
       showBack,
       showTitle,
       videoAspectRatio,
-      showGoLive,
-      onGoLivePress,
-      onReplayPress,
-      titleGolive,
-      showLeftButton,
-      showMiddleButton,
-      showRightButton,
-      errorTitle
     } = this.props;
-    let { isLoading, loadingSuccess, showControls, isError } = this.state;
-    let showGG = false;
+    const { isLoading, loadingSuccess, showControls, isError } = this.state;
+
+    let showAd = false;
     let realShowLoding = false;
     let source = {};
+
     if (uri) {
       if (uri.split) {
         source = { uri: this.props.uri };
@@ -116,16 +98,17 @@ export default class VLCPlayerView extends Component {
         source = uri;
       }
     }
+
     if (Platform.OS === 'ios') {
-      if ((loadingSuccess && isGG) || (isGG && type === 'swf')) {
-        showGG = true;
+      if ((loadingSuccess && isAd) || (isAd && type === 'swf')) {
+        showAd = true;
       }
       if (isLoading && type !== 'swf') {
         realShowLoding = true;
       }
     } else {
-      if (loadingSuccess && isGG) {
-        showGG = true;
+      if (loadingSuccess && isAd) {
+        showAd = true;
       }
       if (isLoading) {
         realShowLoding = true;
@@ -151,13 +134,11 @@ export default class VLCPlayerView extends Component {
         <VLCPlayer
           ref={ref => (this.vlcPlayer = ref)}
           paused={this.state.paused}
-          //seek={this.state.seek}
           style={[styles.video]}
           source={source}
           videoAspectRatio={videoAspectRatio}
           onProgress={this.onProgress.bind(this)}
           onEnd={this.onEnded.bind(this)}
-          //onEnded={this.onEnded.bind(this)}
           onStopped={this.onEnded.bind(this)}
           onPlaying={this.onPlaying.bind(this)}
           onBuffering={this.onBuffering.bind(this)}
@@ -175,7 +156,7 @@ export default class VLCPlayerView extends Component {
           )}
         {isError && (
           <View style={[styles.loading, { backgroundColor: '#000' }]}>
-            <Text style={{ color: 'red' }}>{errorTitle}</Text>
+            <Text style={{ color: 'red' }}>Video playback error, please reload</Text>
             <TouchableOpacity
               activeOpacity={1}
               onPress={this._reload}
@@ -213,13 +194,12 @@ export default class VLCPlayerView extends Component {
                   </Text>
                 )}
             </View>
-            {showGG && (
-              <View style={styles.GG}>
+            {showAd && (
+              <View style={styles.ad}>
                 <TimeLimt
                   onEnd={() => {
                     onEnd && onEnd();
                   }}
-                //maxTime={Math.ceil(this.state.totalTime)}
                 />
               </View>
             )}
@@ -228,9 +208,8 @@ export default class VLCPlayerView extends Component {
         <View style={[styles.bottomView]}>
           {showControls && (
             <ControlBtn
-              //style={isFull?{width:deviceHeight}:{}}
-              showSlider={!isGG}
-              showGG={showGG}
+              showSlider={!isAd}
+              showAd={showAd}
               onEnd={onEnd}
               title={title}
               onLeftPress={onLeftPress}
@@ -254,13 +233,6 @@ export default class VLCPlayerView extends Component {
                   this.vlcPlayer.seek(value);
                 }
               }}
-              showGoLive={showGoLive}
-              onGoLivePress={onGoLivePress}
-              onReplayPress={onReplayPress}
-              titleGolive={titleGolive}
-              showLeftButton={showLeftButton}
-              showMiddleButton={showMiddleButton}
-              showRightButton={showRightButton}
             />
           )}
         </View>
@@ -269,32 +241,29 @@ export default class VLCPlayerView extends Component {
   }
 
   /**
-   * 视屏播放
    * @param event
    */
   onPlaying(event) {
     this.isEnding = false;
-    // if (this.state.paused) {
-    //   this.setState({ paused: false });
-    // }
+    if (this.state.paused) {
+      this.setState({ paused: false });
+    }
     console.log('onPlaying');
   }
 
   /**
-   * 视屏停止
    * @param event
    */
   onPaused(event) {
-    // if (!this.state.paused) {
-    //   this.setState({ paused: true, showControls: true });
-    // } else {
-    //   this.setState({ showControls: true });
-    // }
+    if (!this.state.paused) {
+      this.setState({ paused: true, showControls: true });
+    } else {
+      this.setState({ showControls: true });
+    }
     console.log('onPaused');
   }
 
   /**
-   * 视屏缓冲
    * @param event
    */
   onBuffering(event) {
@@ -306,14 +275,13 @@ export default class VLCPlayerView extends Component {
     if (!this.bufferInterval) {
       this.bufferInterval = setInterval(this.bufferIntervalFunction, 250);
     }
-    console.log('onBuffering');
-    console.log(event);
+    console.log('onBuffering', event);
   }
 
   bufferIntervalFunction = () => {
     console.log('bufferIntervalFunction');
-    let currentTime = new Date().getTime();
-    let diffTime = currentTime - this.bufferTime;
+    const currentTime = new Date().getTime();
+    const diffTime = currentTime - this.bufferTime;
     if (diffTime > 1000) {
       clearInterval(this.bufferInterval);
       this.setState({
@@ -325,17 +293,12 @@ export default class VLCPlayerView extends Component {
         });
       });
       this.bufferInterval = null;
-      console.log('remove  bufferIntervalFunction');
+      console.log('remove bufferIntervalFunction');
     }
   };
 
   _onError = e => {
-    // [bavv add start]
-    let { onVLCError } = this.props;
-    onVLCError && onVLCError();
-    // [bavv add end]
-    console.log('_onError');
-    console.log(e);
+    console.log('_onError', e);
     this.reloadSuccess = false;
     this.setState({
       isError: true,
@@ -347,12 +310,10 @@ export default class VLCPlayerView extends Component {
   };
 
   _onLoadStart = e => {
-    console.log('_onLoadStart');
-    console.log(e);
-    let { isError } = this.state;
+    console.log('_onLoadStart', e);
+    const { isError, currentTime, totalTime } = this.state;
     if (isError) {
       this.reloadSuccess = true;
-      let { currentTime, totalTime } = this.state;
       if (Platform.OS === 'ios') {
         this.vlcPlayer.seek(Number((currentTime / totalTime).toFixed(17)));
       } else {
@@ -390,19 +351,10 @@ export default class VLCPlayerView extends Component {
   };
 
   /**
-   * 视屏进度变化
    * @param event
    */
   onProgress(event) {
-    /* console.log(
-     'position=' +
-     event.position +
-     ',currentTime=' +
-     event.currentTime +
-     ',remainingTime=' +
-     event.remainingTime,
-     );*/
-    let currentTime = event.currentTime;
+    const currentTime = event.currentTime;
     let loadingSuccess = false;
     if (currentTime > 0 || this.state.currentTime > 0) {
       loadingSuccess = true;
@@ -423,7 +375,6 @@ export default class VLCPlayerView extends Component {
   }
 
   /**
-   * 视屏播放结束
    * @param event
    */
   onEnded(event) {
@@ -431,48 +382,22 @@ export default class VLCPlayerView extends Component {
     console.log(event)
     console.log('<---------- onEnded ')
     let { currentTime, totalTime } = this.state;
-    // [bavv add start]
-    let { onVLCEnded, onEnd, autoplay, isGG } = this.props;
-    onVLCEnded && onVLCEnded();
-    // [bavv add end]
-    if (((currentTime + 5) >= totalTime && totalTime > 0) || isGG) {
-      this.setState(
-        {
-          paused: true,
-          //showControls: true,
-        },
-        () => {
-          if (!this.isEnding) {
-            onEnd && onEnd();
-            if (!isGG) {
-              this.vlcPlayer.resume && this.vlcPlayer.resume(false);
-              console.log(this.props.uri + ':   onEnded');
-            } else {
-              console.log('片头：' + this.props.uri + ':   onEnded');
-            }
-            this.isEnding = true;
+    let { onEnd, isAd } = this.props;
+    if (((currentTime + 5) >= totalTime && totalTime > 0) || isAd) {
+      this.setState({ paused: true }, () => {
+        if (!this.isEnding) {
+          onEnd && onEnd();
+          if (!isAd) {
+            this.vlcPlayer.resume && this.vlcPlayer.resume(false);
+            console.log(this.props.uri + ':   onEnded');
           }
-        },
+          this.isEnding = true;
+        }
+      },
       );
-    } else {
-      /* console.log('onEnded   error:'+this.props.uri);
-       this.vlcPlayer.resume && this.vlcPlayer.resume(false);*/
-      /*this.setState({
-        paused: true,
-      },()=>{
-        console.log('onEnded   error:'+this.props.uri);
-        this.reloadSuccess = false;
-        this.setState({
-          isError: true,
-        });
-      });*/
     }
   }
 
-  /**
-   * 全屏
-   * @private
-   */
   _toFullScreen = () => {
     let { startFullScreen, closeFullScreen, isFull } = this.props;
     if (isFull) {
@@ -482,10 +407,6 @@ export default class VLCPlayerView extends Component {
     }
   };
 
-  /**
-   * 播放/停止
-   * @private
-   */
   _play = () => {
     this.setState({ paused: !this.state.paused });
   };
@@ -514,7 +435,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  GG: {
+  ad: {
     backgroundColor: 'rgba(255,255,255,1)',
     height: 30,
     marginRight: 10,
@@ -529,8 +450,7 @@ const styles = StyleSheet.create({
     left: 0,
     height: 45,
     position: 'absolute',
-    width: '100%',
-    //backgroundColor: 'red'
+    width: '100%'
   },
   bottomView: {
     bottom: 0,
